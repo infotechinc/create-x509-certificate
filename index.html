@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- Copyright 2015 Info Tech, Inc. Provided under the MIT license. See LICENSE file for details. -->
+<html>
+<head>
+    <title>X.509 Certificate Creation</title>
+    <script src="certs.js"></script>
+    <script src="common.js"></script>
+    <script src="asn1.js"></script>
+    <script src="x509_schema.js"></script>
+    <script src="x509_simpl.js"></script>
+</head>
+
+<body>
+    <h1>X.509 Certificate Creation</h1>
+
+    <p>This page will create a key pair and
+       a certificate for that key pair with
+       the specified values. The certificate
+       will be self-signed.
+    </p>
+    <p>The certificate, public key, and private
+       key will be provided for download.
+    </p>
+
+    <section id="user-information">
+
+        <table>
+            <tr>
+                <td><label for="common-name">Common Name:</label></td>
+                <td><input type="text" id="common-name"/></td>
+            </tr>
+            <tr>
+                <td><label for="country-code">Country Code:</label></td>
+                <td><input type="text" id="country-code" maxlength="2"/></td>
+            </tr>
+        </table>
+        <p><button id="create-certificate">Create Certificate</button></p>
+    </section>
+
+    <section id="certificate">
+        <h1>Certificate in PEM Format</h1>
+        <pre id="pem-certificate"></pre>
+    </section>
+
+    <section id="public-key">
+        <h1>Public Key in PEM Format</h1>
+        <pre id="pem-public-key"></pre>
+    </section>
+
+    <section id="private-key">
+        <h1>Private Key in PEM Format</h1>
+        <pre id="pem-private-key"></pre>
+    </section>
+
+</body>
+</html>
