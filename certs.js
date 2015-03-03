@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }).
         catch(function(err) {
-            alert("Error generating creating certificate: " + err.message);
+            alert("Error creating certificate: " + err.message);
         });
     }
 
@@ -219,12 +219,12 @@ document.addEventListener("DOMContentLoaded", function() {
         var nextIndex = 0;
         var lineLength;
         while (nextIndex < base64Cert.length) {
-            if (nextIndex + 63 <= base64Cert.length) {
-                pemCert += base64Cert.substr(nextIndex, 63) + "\r\n";
+            if (nextIndex + 64 <= base64Cert.length) {
+                pemCert += base64Cert.substr(nextIndex, 64) + "\r\n";
             } else {
                 pemCert += base64Cert.substr(nextIndex) + "\r\n";
             }
-            nextIndex += 63;
+            nextIndex += 64;
         }
 
         pemCert += "-----END " + label + "-----\r\n";
