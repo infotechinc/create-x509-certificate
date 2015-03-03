@@ -18,28 +18,19 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
 
-    // Check that encoding API is also available
-    if (!window.TextEncoder || !window.TextDecoder) {
-        alert("Your browser does not support the Encoding API! This page will not work.");
-        return;
-    }
-
     document.getElementById("create-certificate").addEventListener("click", createCertificate);
 
     function createCertificate() {
-        var commonName = document.getElementById("common-name").value;
-        var countryCode = document.getElementById("country-code").value.toUpperCase();
         var keyPair;
 
-        if (!commonName) {
-            alert("You must enter a name for the certificate.");
-            return;
-        }
+        var commonName       = document.getElementById("common-name").value;
+        var organization     = document.getElementById("organization").value;
+        var organizationUnit = document.getElementById("organization-unit").value;
+        var countryCode      = document.getElementById("country-code").value;
 
-        if (countryCode.length !== 2) {
-            alert("Country codes must be two characters long.");
-            return;
-        }
+        if (!commonName) {alert("You must enter a name for the certificate."); return;}
+        if (countryCode.length !== 2) {alert("Country codes must be two characters long."); return;}
+        countryCode = countryCode.toUpperCase();
 
         window.crypto.subtle.generateKey(
             {
@@ -49,29 +40,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 hash: {name: "SHA-256"}
             },
             true,   // Must extract private key to create PEM files later
-            ["sign", "verify"]).
+            ["sign", "verify"]
+        ).
         then(function(newKeyPair) {
             keyPair = newKeyPair;
             return keyPair;
-        }).
+        }) .
         then(function(keyPair) {
-            return buildCertificateObject(commonName, countryCode, keyPair);
-        }).
+            return buildCertificateObject(commonName, organization, organizationUnit, countryCode, keyPair);
+        }) .
         then(function(cert) {
             var pemCert = convertBinaryToPem(cert.toSchema(true).toBER(false), "CERTIFICATE");
+            var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemCert);
             document.getElementById("pem-certificate").innerText = pemCert;
-        }).
-        then(function() {
+            document.getElementById("certificate-download").setAttribute("href", pemUrl);
+
             window.crypto.subtle.exportKey('spki', keyPair.publicKey).
             then(function(spki) {
                 var pemPublicKey = convertBinaryToPem(spki, "PUBLIC KEY");
+                var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPublicKey);
                 document.getElementById("pem-public-key").innerText = pemPublicKey;
+                document.getElementById("public-key-download").setAttribute("href", pemUrl);
             });
 
             window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey).
             then(function(pkcs8) {
                 var pemPrivateKey = convertBinaryToPem(pkcs8, "PRIVATE KEY");
+                var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPrivateKey);
                 document.getElementById("pem-private-key").innerText = pemPrivateKey;
+                document.getElementById("private-key-download").setAttribute("href", pemUrl);
             });
         }).
         catch(function(err) {
@@ -79,12 +76,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+
     // Returns a Promise yielding the certificate object
-    function buildCertificateObject(commonName, countryCode, keyPair) {
+    function buildCertificateObject(commonName, organization, organizationUnit, countryCode, keyPair) {
         var cert = new org.pkijs.simpl.CERT();
 
         setSerialNumber(cert, Date.now());
-        setIssuer(cert, countryCode, null, null, commonName);
+        setIssuer(cert, countryCode, organization, organizationUnit, commonName);
         setValidityPeriod(cert, new Date(), 730);  // Good from today for 730 days
         setEmptyExtensions(cert);
         setCABit(cert, false);
@@ -102,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
             cert.serialNumber = new org.pkijs.asn1.INTEGER({value: serialNumber});;
         }
 
-        function setIssuer(cert, countryCode, organization, orgUnit, commonName) {
+        function setIssuer(cert, countryCode, organization, organizationUnit, commonName) {
             if (countryCode) {
                 cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
                         type: "2.5.4.6", //countryCode
@@ -112,15 +110,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (organization) {
                 cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
-                    type: "2.5.4.8", //organization
+                    type: "2.5.4.10", //Organization
                     value: new org.pkijs.asn1.PRINTABLESTRING({value: organization})
                 }));
             }
 
-            if (orgUnit) {
+            if (organizationUnit) {
                 cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
-                    type: "2.5.4.7", //orgUnit
-                    value: new org.pkijs.asn1.PRINTABLESTRING({value: orgUnit})
+                    type: "2.5.4.11", //Organization Unit
+                    value: new org.pkijs.asn1.PRINTABLESTRING({value: organizationUnit})
                 }));
             }
 

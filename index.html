@@ -23,11 +23,18 @@
     </p>
 
     <section id="user-information">
-
         <table>
             <tr>
                 <td><label for="common-name">Common Name:</label></td>
                 <td><input type="text" id="common-name"/></td>
+            </tr>
+            <tr>
+                <td><label for="organization">Organization:</label></td>
+                <td><input type="text" id="organization"/></td>
+            </tr>
+            <tr>
+                <td><label for="organization-unit">Organization Unit:</label></td>
+                <td><input type="text" id="organization-unit"/></td>
             </tr>
             <tr>
                 <td><label for="country-code">Country Code:</label></td>
@@ -39,16 +46,19 @@
 
     <section id="certificate">
         <h1>Certificate in PEM Format</h1>
+        <a id="certificate-download">Download Certificate</a>
         <pre id="pem-certificate"></pre>
     </section>
 
     <section id="public-key">
         <h1>Public Key in PEM Format</h1>
+        <a id="public-key-download">Download Public Key</a>
         <pre id="pem-public-key"></pre>
     </section>
 
     <section id="private-key">
         <h1>Private Key in PEM Format</h1>
+        <a id="private-key-download">Download Private Key</a>
         <pre id="pem-private-key"></pre>
     </section>
 
