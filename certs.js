@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var cert = new org.pkijs.simpl.CERT();
 
         setSerialNumber(cert, Date.now());
+        setSubject(cert, countryCode, organization, organizationUnit, commonName);
         setIssuer(cert, countryCode, organization, organizationUnit, commonName);
         setValidityPeriod(cert, new Date(), 730);  // Good from today for 730 days
         setEmptyExtensions(cert);
@@ -100,30 +101,38 @@ document.addEventListener("DOMContentLoaded", function() {
             cert.serialNumber = new org.pkijs.asn1.INTEGER({value: serialNumber});;
         }
 
+        function setSubject(cert, countryCode, organization, organizationUnit, commonName) {
+            setEntity(cert.subject, countryCode, organization, organizationUnit, commonName);
+        }
+
         function setIssuer(cert, countryCode, organization, organizationUnit, commonName) {
+            setEntity(cert.issuer, countryCode, organization, organizationUnit, commonName);
+        }
+
+        function setEntity(entity, countryCode, organization, organizationUnit, commonName) {
             if (countryCode) {
-                cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
+                entity.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
                         type: "2.5.4.6", //countryCode
                         value: new org.pkijs.asn1.PRINTABLESTRING({value: countryCode})
                 }));
             }
 
             if (organization) {
-                cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
+                entity.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
                     type: "2.5.4.10", //Organization
                     value: new org.pkijs.asn1.PRINTABLESTRING({value: organization})
                 }));
             }
 
             if (organizationUnit) {
-                cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
+                entity.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
                     type: "2.5.4.11", //Organization Unit
                     value: new org.pkijs.asn1.PRINTABLESTRING({value: organizationUnit})
                 }));
             }
 
             if (commonName) {
-                cert.issuer.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
+                entity.types_and_values.push(new org.pkijs.simpl.ATTR_TYPE_AND_VALUE({
                     type: "2.5.4.3", //commonName
                     value: new org.pkijs.asn1.PRINTABLESTRING({value: commonName})
                 }));
