@@ -52,14 +52,14 @@ document.addEventListener("DOMContentLoaded", function() {
         then(function(cert) {
             var pemCert = convertBinaryToPem(cert.toSchema(true).toBER(false), "CERTIFICATE");
             var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemCert);
-            document.getElementById("pem-certificate").innerText = pemCert;
+            document.getElementById("pem-certificate").textContent = pemCert;
             document.getElementById("certificate-download").setAttribute("href", pemUrl);
 
             window.crypto.subtle.exportKey('spki', keyPair.publicKey).
             then(function(spki) {
                 var pemPublicKey = convertBinaryToPem(spki, "PUBLIC KEY");
                 var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPublicKey);
-                document.getElementById("pem-public-key").innerText = pemPublicKey;
+                document.getElementById("pem-public-key").textContent = pemPublicKey;
                 document.getElementById("public-key-download").setAttribute("href", pemUrl);
             });
 
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
             then(function(pkcs8) {
                 var pemPrivateKey = convertBinaryToPem(pkcs8, "PRIVATE KEY");
                 var pemUrl = "data:application/octet-stream;charset=UTF-8;base64," + btoa(pemPrivateKey);
-                document.getElementById("pem-private-key").innerText = pemPrivateKey;
+                document.getElementById("pem-private-key").textContent = pemPrivateKey;
                 document.getElementById("private-key-download").setAttribute("href", pemUrl);
             });
         }).
